@@ -3244,6 +3244,23 @@ local data = sourceFile:read('*all')
 local ast = CreateLuaParser(data)
 local global_scope, root_scope = AddVariableInfo(ast)
 
+
+local DEFOLD_RESERVED = {
+	["init"] = true,
+	["final"] = true,
+	["update"] = true,
+	["fixed_update"] = true,
+	["on_message"] = true,
+	["on_input"] = true,
+	["on_reload"] = true,
+}
+for i=#global_scope,1,-1 do
+	local var = global_scope[i]
+	if DEFOLD_RESERVED[var.Name] then
+		table.remove(global_scope, i)
+	end
+end
+
 if args[1] == 'minify' then
 	minify(ast, global_scope, root_scope)
 elseif args[1] == 'unminify' then

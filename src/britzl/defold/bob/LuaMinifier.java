@@ -1,6 +1,5 @@
 package britzl.defold.bob;
 
-import java.io.FileOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,10 +17,16 @@ public class LuaMinifier implements ILuaObfuscator {
 	private static String minifier_path = null;
 
 
-	private static void writeToFile(File file, String content) throws IOException {
-		FileOutputStream fo = new FileOutputStream(file);
-		fo.write(content.getBytes());
-		fo.close();
+	private static File writeToTempFile(String input) throws IOException {
+		File tempFile = File.createTempFile("luamin", "");
+		Files.write(tempFile.toPath(), input.getBytes());
+		return tempFile;
+	}
+
+	private static File writeToTempFile(InputStream in) throws IOException {
+		File tempFile = File.createTempFile("luamin", "");
+		Files.copy(in, tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+		return tempFile;
 	}
 
 
@@ -30,8 +35,7 @@ public class LuaMinifier implements ILuaObfuscator {
 			return minifier_path;
 		}
 		InputStream in = getClass().getResourceAsStream("/minify.lua");
-		File out = File.createTempFile("luamin", ".lua");
-		Files.copy(in, out.toPath(), StandardCopyOption.REPLACE_EXISTING);
+		File out = writeToTempFile(in);
 		minifier_path = out.getAbsolutePath();
 		return minifier_path;
 	}
@@ -40,33 +44,30 @@ public class LuaMinifier implements ILuaObfuscator {
 
 	public String obfuscate(String input) {
 		try {
-			File outputFile = File.createTempFile("luamin", ".min.lua");
-			File inputFile = File.createTempFile("luamin", ".lua");
-
-			writeToFile(inputFile, input);
+			File inputFile = writeToTempFile(input);
 
 			List<String> options = new ArrayList<String>();
 			options.add("lua");
 			options.add(getMinifierPath());
 			options.add("minify");
 			options.add(inputFile.getAbsolutePath());
-			options.add(">");
-			options.add(outputFile.getAbsolutePath());
 
 			ProcessBuilder pb = new ProcessBuilder(options).redirectErrorStream(true);
 			Process p = pb.start();
 			int ret = p.waitFor();
+
+			InputStream is = p.getInputStream();
+			byte[] output_bytes = new byte[is.available()];
+			is.read(output_bytes);
+			is.close();
+			String output = new String(output_bytes);
+
+			inputFile.delete();
+
 			if (ret != 0) {
-				inputFile.delete();
-				outputFile.delete();
-				System.err.println("Obfuscation failed, return code: " + ret);
+				System.err.println("Obfuscation failed, return code: " + ret + " " + output);
 				return null;
 			}
-
-			String output = Files.readString(outputFile.toPath());
-			System.out.println("output " + output);
-			outputFile.delete();
-			inputFile.delete();
 			return output;
 		}
 		catch(Exception e) {
