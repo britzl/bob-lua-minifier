@@ -14,8 +14,8 @@ import com.dynamo.bob.pipeline.LuaBuilderStepParams;
 import com.dynamo.bob.pipeline.LuaBuilderStep;
 
 
-@LuaBuilderStepParams(name="LuaMinifier")
-public class LuaMinifier extends LuaBuilderStep {
+@LuaBuilderPluginParams(name="LuaMinifier")
+public class LuaMinifier extends LuaBuilderPlugin {
 
 	private static String minifier_path = null;
 
@@ -42,7 +42,7 @@ public class LuaMinifier extends LuaBuilderStep {
 		return minifier_path;
 	}
 
-
+	@Override
 	public String build(String input) throws Exception {
 		try {
 			File inputFile = writeToTempFile(input);
