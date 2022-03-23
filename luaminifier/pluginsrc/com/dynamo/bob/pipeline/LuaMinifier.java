@@ -10,6 +10,10 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 
 
+import com.dynamo.bob.pipeline.LuaBuilderStepParams;
+import com.dynamo.bob.pipeline.LuaBuilderStep;
+
+
 @LuaBuilderStepParams(name="LuaMinifier")
 public class LuaMinifier extends LuaBuilderStep {
 
