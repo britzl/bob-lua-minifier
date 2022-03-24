@@ -10,8 +10,8 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 
 
-import com.dynamo.bob.pipeline.LuaBuilderStepParams;
-import com.dynamo.bob.pipeline.LuaBuilderStep;
+import com.dynamo.bob.pipeline.LuaBuilderPluginParams;
+import com.dynamo.bob.pipeline.LuaBuilderPlugin;
 
 
 @LuaBuilderPluginParams(name="LuaMinifier")
