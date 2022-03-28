@@ -10,11 +10,9 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 
 
-import com.dynamo.bob.pipeline.LuaBuilderPluginParams;
 import com.dynamo.bob.pipeline.LuaBuilderPlugin;
 
 
-@LuaBuilderPluginParams(name="LuaMinifier")
 public class LuaMinifier extends LuaBuilderPlugin {
 
 	private static String minifier_path = null;
